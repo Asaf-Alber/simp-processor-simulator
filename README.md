@@ -14,6 +14,32 @@ The goal was to build a fully functional execution environment that models how a
 
 ---
 
+flowchart TD
+  A[Write SIMP Assembly Program (.asm)] --> B[Assembler (C)]
+  B --> C[memin.txt<br/>4096 lines of 32-bit hex words]
+  C --> D[Simulator (C)]
+  E[diskin.txt<br/>initial disk contents] --> D
+  F[irq2in.txt<br/>external irq schedule] --> D
+
+  D --> G{Cycle-by-cycle loop}
+  G --> H[1) Check & service interrupts<br/>(irq0/irq1/irq2)]
+  H --> I[2) Fetch instruction<br/>from Memory[PC]]
+  I --> J[3) Decode fields<br/>opcode, rd/rs/rt, imm8/bigimm]
+  J --> K[4) Execute<br/>ALU / Load-Store / Branch-Jump / I-O]
+  K --> L[5) Update PC & cycle counter]
+  L --> M[6) Update peripherals<br/>disk, LEDs, 7seg, framebuffer]
+  M --> N[7) Write traces/logs<br/>trace.txt, hwregtrace.txt]
+  N --> O{halt or MAX_CYCLES?}
+  O -- No --> G
+  O -- Yes --> P[Generate outputs]
+
+  P --> Q[memout.txt<br/>final memory]
+  P --> R[regout.txt<br/>final registers]
+  P --> S[cycles.txt<br/>total cycles]
+  P --> T[diskout.txt<br/>final disk]
+  P --> U[monitor.txt / monitor.yuv<br/>framebuffer]
+  P --> V[leds.txt / display7seg.txt<br/>I/O states]
+
 ## Architecture
 
 - 32-bit word size  
