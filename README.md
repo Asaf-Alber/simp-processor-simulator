@@ -17,38 +17,35 @@ The goal was to build a fully functional execution environment that models how a
 ```mermaid
 flowchart TD
 
-  %% ===== ASSEMBLER =====
-  A[Write SIMP Assembly Program (.asm)]
-      --> B[Assembler (Two-Pass, C)]
-  B --> C[memin.txt<br/>4096 x 32-bit words]
+  A[Write SIMP Assembly Program - asm file] --> B[Assembler in C]
 
-  %% ===== SIMULATOR INPUTS =====
-  C --> D[Cycle-Accurate Simulator (C)]
-  E[diskin.txt<br/>Initial Disk Image] --> D
-  F[irq2in.txt<br/>External IRQ Schedule] --> D
+  B --> C[memin.txt - 4096 lines - 32 bit hex words]
 
-  %% ===== EXECUTION LOOP =====
-  D --> G{Per-Cycle Execution Loop}
+  C --> D[Simulator in C]
 
-  G --> H[1. Interrupt Check<br/>(irq0 / irq1 / irq2)]
-  H --> I[2. Fetch<br/>Instruction = Memory[PC]]
-  I --> J[3. Decode<br/>Opcode / Registers / Immediates]
-  J --> K[4. Execute<br/>ALU / Load-Store / Branch / I-O]
-  K --> L[5. Update PC & Cycle Counter]
-  L --> M[6. Update Peripherals<br/>Disk / LEDs / Display / Framebuffer]
-  M --> N[7. Trace Logging<br/>trace.txt / hwregtrace.txt]
+  E[diskin.txt - initial disk image] --> D
+  F[irq2in.txt - external interrupt schedule] --> D
 
-  N --> O{halt or MAX_CYCLES?}
+  D --> G{Per Cycle Execution Loop}
+
+  G --> H[1 Interrupt Check - irq0 irq1 irq2]
+  H --> I[2 Fetch Instruction from Memory PC]
+  I --> J[3 Decode - opcode registers immediates]
+  J --> K[4 Execute - ALU Load Store Branch IO]
+  K --> L[5 Update PC and cycle counter]
+  L --> M[6 Update peripherals - disk leds display framebuffer]
+  M --> N[7 Trace logging - trace.txt hwregtrace.txt]
+
+  N --> O{halt or MAX_CYCLES}
   O -- No --> G
-  O -- Yes --> P[Generate Final Outputs]
+  O -- Yes --> P[Generate outputs]
 
-  %% ===== OUTPUTS =====
   P --> Q[memout.txt]
   P --> R[regout.txt]
   P --> S[cycles.txt]
   P --> T[diskout.txt]
-  P --> U[monitor.txt / monitor.yuv]
-  P --> V[leds.txt / display7seg.txt]
+  P --> U[monitor.txt and monitor.yuv]
+  P --> V[leds.txt and display7seg.txt]
 ```
 
 ## Architecture
