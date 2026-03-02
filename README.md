@@ -14,6 +14,7 @@ The goal was to build a fully functional execution environment that models how a
 
 ---
 
+``` mermaid
 flowchart TD
   A[Write SIMP Assembly Program (.asm)] --> B[Assembler (C)]
   B --> C[memin.txt<br/>4096 lines of 32-bit hex words]
@@ -39,6 +40,7 @@ flowchart TD
   P --> T[diskout.txt<br/>final disk]
   P --> U[monitor.txt / monitor.yuv<br/>framebuffer]
   P --> V[leds.txt / display7seg.txt<br/>I/O states]
+```
 
 ## Architecture
 
