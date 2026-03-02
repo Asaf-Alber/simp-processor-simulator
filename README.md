@@ -14,32 +14,41 @@ The goal was to build a fully functional execution environment that models how a
 
 ---
 
-``` mermaid
+```mermaid
 flowchart TD
-  A[Write SIMP Assembly Program (.asm)] --> B[Assembler (C)]
-  B --> C[memin.txt<br/>4096 lines of 32-bit hex words]
-  C --> D[Simulator (C)]
-  E[diskin.txt<br/>initial disk contents] --> D
-  F[irq2in.txt<br/>external irq schedule] --> D
 
-  D --> G{Cycle-by-cycle loop}
-  G --> H[1) Check & service interrupts<br/>(irq0/irq1/irq2)]
-  H --> I[2) Fetch instruction<br/>from Memory[PC]]
-  I --> J[3) Decode fields<br/>opcode, rd/rs/rt, imm8/bigimm]
-  J --> K[4) Execute<br/>ALU / Load-Store / Branch-Jump / I-O]
-  K --> L[5) Update PC & cycle counter]
-  L --> M[6) Update peripherals<br/>disk, LEDs, 7seg, framebuffer]
-  M --> N[7) Write traces/logs<br/>trace.txt, hwregtrace.txt]
+  %% ===== ASSEMBLER =====
+  A[Write SIMP Assembly Program (.asm)]
+      --> B[Assembler (Two-Pass, C)]
+  B --> C[memin.txt<br/>4096 x 32-bit words]
+
+  %% ===== SIMULATOR INPUTS =====
+  C --> D[Cycle-Accurate Simulator (C)]
+  E[diskin.txt<br/>Initial Disk Image] --> D
+  F[irq2in.txt<br/>External IRQ Schedule] --> D
+
+  %% ===== EXECUTION LOOP =====
+  D --> G{Per-Cycle Execution Loop}
+
+  G --> H[1. Interrupt Check<br/>(irq0 / irq1 / irq2)]
+  H --> I[2. Fetch<br/>Instruction = Memory[PC]]
+  I --> J[3. Decode<br/>Opcode / Registers / Immediates]
+  J --> K[4. Execute<br/>ALU / Load-Store / Branch / I-O]
+  K --> L[5. Update PC & Cycle Counter]
+  L --> M[6. Update Peripherals<br/>Disk / LEDs / Display / Framebuffer]
+  M --> N[7. Trace Logging<br/>trace.txt / hwregtrace.txt]
+
   N --> O{halt or MAX_CYCLES?}
   O -- No --> G
-  O -- Yes --> P[Generate outputs]
+  O -- Yes --> P[Generate Final Outputs]
 
-  P --> Q[memout.txt<br/>final memory]
-  P --> R[regout.txt<br/>final registers]
-  P --> S[cycles.txt<br/>total cycles]
-  P --> T[diskout.txt<br/>final disk]
-  P --> U[monitor.txt / monitor.yuv<br/>framebuffer]
-  P --> V[leds.txt / display7seg.txt<br/>I/O states]
+  %% ===== OUTPUTS =====
+  P --> Q[memout.txt]
+  P --> R[regout.txt]
+  P --> S[cycles.txt]
+  P --> T[diskout.txt]
+  P --> U[monitor.txt / monitor.yuv]
+  P --> V[leds.txt / display7seg.txt]
 ```
 
 ## Architecture
